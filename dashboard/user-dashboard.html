@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard - EA License System</title>
+  
+  <!-- Add Paystack Script -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  
+  <style>
+    /* ============ KEEP ALL YOUR EXISTING STYLES ============ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      /* Main color scheme - Gold & Dark theme */
+      --primary-gold: #FABA13;
+      --primary-gold-dark: #E5A40C;
+      --primary-gold-light: #FCC544;
+      --primary-gold-soft: #FFF4E0;
+      
+      /* Dark backgrounds */
+      --bg-dark: #0A0E1A;
+      --bg-dark-secondary: #151B2E;
+      --bg-card: #1C2438;
+      --bg-card-hover: #232C42;
+      
+      /* Text colors */
+      --text-primary: #FFFFFF;
+      --text-secondary: #B8BCC8;
+      --text-muted: #7A8196;
+      
+      /* Status colors */
+      --status-active: #22C55E;
+      --status-active-bg: rgba(34, 197, 94, 0.1);
+      --status-suspended: #F59E0B;
+      --status-suspended-bg: rgba(245, 158, 11, 0.1);
+      --status-expired: #EF4444;
+      --status-expired-bg: rgba(239, 68, 68, 0.1);
+      --status-inactive: #6B7280;
+      --status-inactive-bg: rgba(107, 114, 128, 0.1);
+      
+      /* Borders and shadows */
+      --border-color: rgba(248, 186, 19, 0.1);
+      --border-hover: rgba(248, 186, 19, 0.3);
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --shadow-gold: 0 0 20px rgba(250, 186, 19, 0.2);
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-secondary) 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(250, 186, 19, 0.05) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(28, 36, 56, 0.8) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeIn 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(250, 186, 19, 0.1), transparent);
+      animation: shimmer 3s infinite;
+    }
+    
+    .header h1 {
+      background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    
+    .welcome-text {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--bg-dark);
+    }
+    
+    /* Cards */
+    .card {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(28, 36, 56, 0.95) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary-gold), var(--primary-gold-light));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg), var(--shadow-gold);
+      border-color: var(--border-hover);
+    }
+    
+    .card:hover::before {
+      opacity: 1;
+    }
+    
+    .card h2 {
+      color: var(--primary-gold);
+      font-size: 18px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card h2::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(180deg, var(--primary-gold), var(--primary-gold-dark));
+      border-radius: 2px;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(250, 186, 19, 0.1) 100%);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-gold), var(--primary-gold-light));
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-gold);
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+    
+    /* Dashboard Grid */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+    
+    .tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.3s;
+      position: relative;
+    }
+    
+    .tab:hover {
+      color: var(--primary-gold-light);
+    }
+    
+    .tab.active {
+      color: var(--primary-gold);
+      border-bottom-color: var(--primary-gold);
+    }
+    
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary-gold);
+      box-shadow: 0 0 10px rgba(250, 186, 19, 0.5);
+    }
+    
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Tables */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+      box-shadow: var(--shadow-md);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background: linear-gradient(135deg, var(--bg-dark-secondary) 0%, rgba(250, 186, 19, 0.05) 100%);
+      color: var(--primary-gold);
+      text-align: left;
+      padding: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    tr {
+      transition: background 0.2s;
+    }
+    
+    tr:hover {
+      background: rgba(250, 186, 19, 0.05);
+    }
+    
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-dark-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-gold);
+      box-shadow: 0 0 0 3px rgba(250, 186, 19, 0.1);
+      background: var(--bg-dark);
+    }
+    
+    /* Buttons */
+    button {
+      background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-dark) 100%);
+      color: var(--bg-dark);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(250, 186, 19, 0.3);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary-gold);
+      border: 1px solid var(--primary-gold);
+    }
+    
+    .btn-ghost:hover {
+      background: rgba(250, 186, 19, 0.1);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, var(--status-expired) 0%, #DC2626 100%);
+    }
+    
+    /* License Key Display */
+    .license-key {
+      font-family: 'Fira Code', 'SF Mono', Monaco, 'Courier New', monospace;
+      background: linear-gradient(135deg, var(--bg-dark-secondary) 0%, rgba(250, 186, 19, 0.1) 100%);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--primary-gold-light);
+      border: 1px solid var(--border-color);
+    }
+    
+    .copy-btn {
+      cursor: pointer;
+      margin-left: 8px;
+      color: var(--primary-gold);
+      transition: all 0.3s;
+      display: inline-block;
+    }
+    
+    .copy-btn:hover {
+      color: var(--primary-gold-light);
+      transform: scale(1.2);
+    }
+    
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-active {
+      background: var(--status-active-bg);
+      color: var(--status-active);
+      border: 1px solid var(--status-active);
+    }
+    
+    .status-suspended {
+      background: var(--status-suspended-bg);
+      color: var(--status-suspended);
+      border: 1px solid var(--status-suspended);
+    }
+    
+    .status-expired {
+      background: var(--status-expired-bg);
+      color: var(--status-expired);
+      border: 1px solid var(--status-expired);
+    }
+    
+    .status-inactive {
+      background: var(--status-inactive-bg);
+      color: var(--status-inactive);
+      border: 1px solid var(--status-inactive);
+    }
+    
+    /* Alerts */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .alert.show {
+      display: flex;
+    }
+    
+    .alert-success {
+      background: linear-gradient(135deg, var(--status-active-bg) 0%, rgba(34, 197, 94, 0.05) 100%);
+      color: var(--status-active);
+      border: 1px solid var(--status-active);
+    }
+    
+    .alert-error {
+      background: linear-gradient(135deg, var(--status-expired-bg) 0%, rgba(239, 68, 68, 0.05) 100%);
+      color: var(--status-expired);
+      border: 1px solid var(--status-expired);
+    }
+    
+    .alert-info {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      color: #3B82F6;
+      border: 1px solid #3B82F6;
+    }
+    
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .empty-state h3 {
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    /* Loading */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--primary-gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      width: min(90vw, 480px);
+      max-height: 85vh;
+      overflow: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-header h3 {
+      color: var(--primary-gold);
+      font-size: 20px;
+    }
+    
+    .close-btn {
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    
+    .close-btn:hover {
+      color: var(--primary-gold);
+    }
+    
+    .order-summary {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+    
+    .order-summary h4 {
+      color: var(--primary-gold);
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    .order-total {
+      border-top: 1px solid var(--border-color);
+      margin-top: 12px;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 16px;
+    }
+    
+    /* Product Images */
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    
+    /* Utility */
+    .muted {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+      
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h1>My Dashboard</h1>
+        <p class="welcome-text">Welcome back, <span id="userName">User</span>!</p>
+      </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div>
+          <div style="font-weight: 600; font-size: 14px;" id="userEmail">Loading...</div>
+          <div class="muted" style="font-size: 12px;">Free Account</div>
+        </div>
+        <button class="btn-ghost" onclick="signOut()">🚪 Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="alert alert-success" id="successAlert">
+      <span>✅</span>
+      <span id="successMessage"></span>
+    </div>
+    <div class="alert alert-error" id="errorAlert">
+      <span>⚠️</span>
+      <span id="errorMessage"></span>
+    </div>
+    <div class="alert alert-info" id="infoAlert">
+      <span>ℹ️</span>
+      <span id="infoMessage"></span>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="myLicensesCount">0</div>
+        <div class="stat-label">My Licenses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="activeAccountsCount">0</div>
+        <div class="stat-label">Active Accounts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="expiringCount">0</div>
+        <div class="stat-label">Expiring Soon</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="ordersCount">0</div>
+        <div class="stat-label">My Orders</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="licenses">🔑 My Licenses</button>
+      <button class="tab" data-tab="activations">✅ My Activations</button>
+      <button class="tab" data-tab="store">🛒 Store</button>
+      <button class="tab" data-tab="account">👤 My Account</button>
+      <button class="tab" data-tab="support">💬 Support</button>
+    </div>
+
+    <!-- My Licenses Tab -->
+    <div id="licenses" class="tab-content active">
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>License Key</th>
+              <th>Product</th>
+              <th>Status</th>
+              <th>Expires</th>
+              <th>Live/Demo Limits</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="licensesTableBody">
+            <tr><td colspan="6" style="text-align: center;" class="muted">Loading your licenses...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Empty State for No Licenses -->
+      <div id="noLicensesState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">🔒</div>
+        <h3>No Licenses Yet</h3>
+        <p>You don't have any licenses yet. Visit the store to purchase your first license!</p>
+        <button onclick="switchToTab('store')" style="margin-top: 20px;">Browse Store 🛒</button>
+      </div>
+    </div>
+
+    <!-- My Activations Tab -->
+    <div id="activations" class="tab-content">
+      <div class="card" style="margin-bottom: 20px;">
+        <h2>Activation Instructions</h2>
+        <ol style="color: var(--text-secondary); line-height: 1.8;">
+          <li>Copy your license key from the Licenses tab</li>
+          <li>Open MetaTrader 4/5</li>
+          <li>Attach the EA to a chart</li>
+          <li>Enter the license key when prompted</li>
+          <li>The EA will activate automatically</li>
+        </ol>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Broker</th>
+              <th>Type</th>
+              <th>License Key</th>
+              <th>Activated</th>
+              <th>Last Check</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="activationsTableBody">
+            <tr><td colspan="7" style="text-align: center;" class="muted">Loading your activations...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Store Tab -->
+    <div id="store" class="tab-content">
+      <div class="dashboard" id="storeProducts">
+        <!-- Products will be loaded here -->
+      </div>
+      
+      <div id="noProductsState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">📦</div>
+        <h3>No Products Available</h3>
+        <p>Check back soon for new products!</p>
+      </div>
+    </div>
+
+    <!-- My Account Tab -->
+    <div id="account" class="tab-content">
+      <div class="dashboard">
+        <div class="card">
+          <h2>Account Information</h2>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="accountEmail" readonly style="background: var(--bg-dark); cursor: not-allowed;" />
+          </div>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="accountName" />
+          </div>
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" id="accountCompany" placeholder="Optional" />
+          </div>
+          <button onclick="updateAccount()">Update Profile</button>
+        </div>
+        
+        <div class="card">
+          <h2>Change Password</h2>
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="currentPassword" />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="newPassword" />
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPassword" />
+          </div>
+          <button onclick="changePassword()">Change Password</button>
+        </div>
+        
+        <div class="card">
+          <h2>Account Status</h2>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+            <span class="muted">Account Type:</span>
+            <span class="status-badge status-active">FREE ACCOUNT</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+            <span class="muted">Member Since:</span>
+            <span id="memberSince">-</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span class="muted">Total Purchases:</span>
+            <span id="totalPurchases">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support Tab -->
+    <div id="support" class="tab-content">
+      <div class="dashboard">
+        <div class="card">
+          <h2>Contact Support</h2>
+          <div class="form-group">
+            <label>Subject</label>
+            <select id="supportSubject">
+              <option>License Issue</option>
+              <option>Activation Problem</option>
+              <option>Payment Question</option>
+              <option>Technical Support</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="supportMessage" rows="6" placeholder="Describe your issue..."></textarea>
+          </div>
+          <button onclick="sendSupport()">Send Message</button>
+        </div>
+        
+        <div class="card">
+          <h2>Frequently Asked Questions</h2>
+          <div style="margin-bottom: 20px;">
+            <h3 style="color: var(--primary-gold); margin-bottom: 8px;">How do I activate my license?</h3>
+            <p class="muted">Simply attach the EA to any chart in MetaTrader and enter your license key when prompted.</p>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <h3 style="color: var(--primary-gold); margin-bottom: 8px;">Can I use my license on multiple accounts?</h3>
+            <p class="muted">Yes, each license allows multiple accounts based on your plan limits (Live and Demo accounts).</p>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <h3 style="color: var(--primary-gold); margin-bottom: 8px;">What happens when my license expires?</h3>
+            <p class="muted">The EA will stop working on the expiry date. You'll need to renew your license to continue using it.</p>
+          </div>
+          <div>
+            <h3 style="color: var(--primary-gold); margin-bottom: 8px;">How do I get support?</h3>
+            <p class="muted">Use the contact form above or email us at support@example.com</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purchase Confirmation Modal -->
+  <div id="purchaseModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Complete Your Purchase</h3>
+        <button class="close-btn" id="closePurchaseModal">&times;</button>
+      </div>
+      
+      <div class="order-summary">
+        <h4>Order Summary</h4>
+        <div class="order-item">
+          <span>Product:</span>
+          <span id="orderProductName">-</span>
+        </div>
+        <div class="order-item">
+          <span>License Type:</span>
+          <span id="orderLicenseType">Lifetime</span>
+        </div>
+        <div class="order-item">
+          <span>Max Live Accounts:</span>
+          <span id="orderMaxLive">5</span>
+        </div>
+        <div class="order-item">
+          <span>Max Demo Accounts:</span>
+          <span id="orderMaxDemo">2</span>
+        </div>
+        <div class="order-total">
+          <span>Total Amount:</span>
+          <span id="orderTotal">₵0</span>
+        </div>
+      </div>
+      
+      <button id="payWithPaystackBtn" style="width: 100%;">
+        Pay with Paystack
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ========== CONFIGURATION ==========
+    const API_URL = 'https://ea-license-system.ghwmelite.workers.dev';
+    
+    // PAYSTACK CONFIGURATION - UPDATE THESE WITH YOUR KEYS
+    const PAYSTACK_PUBLIC_KEY = 'pk_test_fdf6e6165d336131eb791fb05b39b6e5050a1564'; // Your live public key
+    
+    // ========== USER SESSION MANAGEMENT ==========
+    const USER_TOKEN_KEY = 'user_token';
+    const USER_EMAIL_KEY = 'user_email';
+    const USER_NAME_KEY = 'user_name';
+    
+    // Store current product for purchase
+    let currentProduct = null;
+	// Track order created before Paystack
+    let currentOrderId = null;
+
+    
+    function getUserToken() {
+      return localStorage.getItem(USER_TOKEN_KEY) || '';
+    }
+    
+    function getUserEmail() {
+      return localStorage.getItem(USER_EMAIL_KEY) || '';
+    }
+    
+    function getUserName() {
+      return localStorage.getItem(USER_NAME_KEY) || 'User';
+    }
+    
+    // ========== API WRAPPER ==========
+    async function apiCall(path, options = {}) {
+      const token = getUserToken();
+      const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+      };
+      
+      // Add user auth if available
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      try {
+        const response = await fetch(`${API_URL}${path}`, {
+          ...options,
+          headers
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
+    }
+    
+    // ========== UI HELPERS ==========
+    function showAlert(message, type = 'info') {
+      const alertId = `${type}Alert`;
+      const messageId = `${type}Message`;
+      
+      const alertEl = document.getElementById(alertId);
+      const messageEl = document.getElementById(messageId);
+      
+      if (alertEl && messageEl) {
+        messageEl.textContent = message;
+        alertEl.classList.add('show');
+        
+        setTimeout(() => {
+          alertEl.classList.remove('show');
+        }, 5000);
+      }
+    }
+    
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showAlert('Copied to clipboard!', 'success');
+      } catch (err) {
+        showAlert('Failed to copy', 'error');
+      }
+    }
+    
+    // ========== TAB MANAGEMENT ==========
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        const tabName = e.currentTarget.dataset.tab;
+        switchToTab(tabName);
+      });
+    });
+    
+    function switchToTab(tabName) {
+      // Update active tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+      
+      // Update content
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      
+      // Load tab data
+      switch(tabName) {
+        case 'licenses':
+          loadMyLicenses();
+          break;
+        case 'activations':
+          loadMyActivations();
+          break;
+        case 'store':
+          loadStore();
+          break;
+        case 'account':
+          loadAccountInfo();
+		  loadMyOrders();
+          break;
+      }
+    }
+    
+    // ========== PAYSTACK INTEGRATION ==========
+    async function initializePaystackPayment(product) {
+  try {
+    // 1) Create a pending order so backend has an order_id to complete
+    const order = await apiCall('/api/store/guest-checkout', {
+      method: 'POST',
+      body: JSON.stringify({
+        product_id: product.id,
+        customer_email: getUserEmail(),
+        customer_name: getUserName()
+      })
+    });
+    currentOrderId = order.order_id;
+
+    // 2) Launch Paystack checkout
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: getUserEmail(),
+      amount: product.price * 100,
+      currency: 'GHS',
+      ref: 'EA_' + Date.now() + '_' + Math.floor(Math.random() * 1000000),
+      metadata: {
+        custom_fields: [
+          { display_name: "Order ID",   variable_name: "order_id",   value: currentOrderId },
+          { display_name: "Product ID", variable_name: "product_id", value: product.id },
+          { display_name: "User Email", variable_name: "user_email", value: getUserEmail() }
+        ]
+      },
+      callback: function (response) {
+        // Payment successful
+        showAlert('Payment successful! Processing your order...', 'success');
+        processSuccessfulPayment(response.reference, currentOrderId);
+        document.getElementById('purchaseModal').classList.remove('show');
+      },
+      onClose: function () {
+        showAlert('Payment cancelled', 'info');
+      }
+    });
+
+    handler.openIframe();
+  } catch (err) {
+    console.error('Checkout init failed:', err);
+    showAlert('Could not start checkout. Please try again.', 'error');
+  }
+}
+
+    
+    // Process successful payment
+async function processSuccessfulPayment(reference, orderId) {
+  try {
+    // Verify payment + complete order on backend (creates license, updates order)
+    const result = await apiCall('/api/store/complete-purchase', {
+      method: 'POST',
+      body: JSON.stringify({
+        payment_reference: reference,
+        order_id: orderId,
+        customer_email: getUserEmail(),
+        customer_name: getUserName()
+      })
+    });
+
+    if (result.success) {
+      showAlert('License created successfully! Check your licenses tab.', 'success');
+      loadMyLicenses();
+      switchToTab('licenses');
+    } else {
+      showAlert('Order processing failed. Please contact support with reference: ' + reference, 'error');
+    }
+  } catch (e) {
+  console.error('Failed to process order:', e);
+  // Show more specific error message
+  if (e.message && e.message.includes('configuration')) {
+    showAlert('Payment received but license creation failed. Please contact support with your payment reference: ' + reference, 'error');
+  } else {
+    showAlert('Failed to process order. Please contact support with reference: ' + reference, 'error');
+  }
+  // Save the reference for user support
+  localStorage.setItem('pending_payment_ref', reference);
+}
+  
+  finally {
+    currentOrderId = null;
+    currentProduct = null;
+  }
+}
+
+    
+    // ========== LOAD STORE ==========
+    async function loadStore() {
+      try {
+        const response = await apiCall('/api/store/products');
+        
+        const container = document.getElementById('storeProducts');
+        
+        if (!response.products || response.products.length === 0) {
+          document.getElementById('noProductsState').style.display = 'block';
+          container.style.display = 'none';
+        } else {
+          document.getElementById('noProductsState').style.display = 'none';
+          container.style.display = 'grid';
+          
+          container.innerHTML = response.products
+            .filter(p => p.is_active)
+            .map(product => `
+              <div class="card">
+                ${product.product_image ? `<img src="${product.product_image}" alt="${product.product_name}" class="product-image" />` : ''}
+                <h2>${product.product_name}</h2>
+                <div style="font-size: 24px; color: var(--primary-gold); margin-bottom: 16px;">
+                  ₵${product.price}
+                </div>
+                <p class="muted" style="margin-bottom: 16px;">${product.description || 'Professional EA License'}</p>
+                <div style="margin-bottom: 16px;">
+                  <div class="muted" style="margin-bottom: 8px;">✅ ${product.max_live_accounts || 5} Live Accounts</div>
+                  <div class="muted" style="margin-bottom: 8px;">✅ ${product.max_demo_accounts || 2} Demo Accounts</div>
+                  <div class="muted">✅ ${product.license_type === 'lifetime' ? 'Lifetime License' : product.license_duration_days + ' Days'}</div>
+                </div>
+                <button onclick='purchaseProduct(${JSON.stringify(product).replace(/'/g, "&apos;")})'>Purchase Now</button>
+              </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Failed to load store:', error);
+        showDemoProducts();
+      }
+    }
+    
+    // Purchase product function with Paystack
+    function purchaseProduct(product) {
+      currentProduct = product;
+      
+      // Update modal with product details
+      document.getElementById('orderProductName').textContent = product.product_name;
+      document.getElementById('orderLicenseType').textContent = 
+        product.license_type === 'subscription' ? `${product.license_duration_days} Days` : 'Lifetime';
+      document.getElementById('orderMaxLive').textContent = product.max_live_accounts || 5;
+      document.getElementById('orderMaxDemo').textContent = product.max_demo_accounts || 2;
+      document.getElementById('orderTotal').textContent = `₵${product.price}`;
+      
+      // Show modal
+      document.getElementById('purchaseModal').classList.add('show');
+    }
+    
+    // Pay with Paystack button
+    document.getElementById('payWithPaystackBtn')?.addEventListener('click', () => {
+      if (currentProduct) {
+        initializePaystackPayment(currentProduct);
+      }
+    });
+    
+    // Close modal
+    document.getElementById('closePurchaseModal')?.addEventListener('click', () => {
+      document.getElementById('purchaseModal').classList.remove('show');
+    });
+    
+    // ========== LOAD USER DATA ==========
+    async function loadMyLicenses() {
+      try {
+        const userEmail = getUserEmail();
+        
+        // This would normally be a user-specific endpoint
+        const response = await apiCall(`/api/user/licenses?email=${userEmail}`);
+        
+        const tbody = document.getElementById('licensesTableBody');
+        
+        if (!response.licenses || response.licenses.length === 0) {
+          document.getElementById('noLicensesState').style.display = 'block';
+          tbody.parentElement.parentElement.style.display = 'none';
+        } else {
+          document.getElementById('noLicensesState').style.display = 'none';
+          tbody.parentElement.parentElement.style.display = 'block';
+          
+          tbody.innerHTML = response.licenses.map(license => `
+            <tr>
+              <td>
+                <span class="license-key">${license.license_key}</span>
+                <span class="copy-btn" onclick="copyToClipboard('${license.license_key}')">📋</span>
+              </td>
+              <td>${license.product_name || 'EA License'}</td>
+              <td>
+                <span class="status-badge status-${license.status}">
+                  ${license.status.toUpperCase()}
+                </span>
+              </td>
+              <td>${license.expiry_date ? formatDate(license.expiry_date) : 'Lifetime'}</td>
+              <td>Live: ${license.max_live_accounts} / Demo: ${license.max_demo_accounts}</td>
+              <td>
+                <button class="btn-ghost" style="padding: 6px 12px; font-size: 12px;" 
+                        onclick="viewLicenseDetails('${license.license_key}')">
+                  View Details
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        }
+        
+        // Update stats
+        document.getElementById('myLicensesCount').textContent = response.licenses?.length || 0;
+        
+      } catch (error) {
+        console.error('Failed to load licenses:', error);
+        // For now, show demo data
+        showDemoLicenses();
+      }
+    }
+    
+    async function loadMyActivations() {
+      try {
+        const userEmail = getUserEmail();
+        const response = await apiCall(`/api/user/activations?email=${userEmail}`);
+        
+        const tbody = document.getElementById('activationsTableBody');
+        
+        if (!response.activations || response.activations.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;" class="muted">No active accounts yet</td></tr>';
+        } else {
+          tbody.innerHTML = response.activations.map(activation => `
+            <tr>
+              <td>${activation.account_number}</td>
+              <td>${activation.broker_server}</td>
+              <td>${activation.account_type.toUpperCase()}</td>
+              <td>
+                <span class="license-key" style="font-size: 11px;">${activation.license_key.substr(0, 8)}...</span>
+              </td>
+              <td>${formatDate(activation.activation_date)}</td>
+              <td>${formatDate(activation.last_check)}</td>
+              <td>
+                <span class="status-badge status-${activation.status}">
+                  ${activation.status.toUpperCase()}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+        }
+        
+        // Update stats
+        document.getElementById('activeAccountsCount').textContent = 
+          response.activations?.filter(a => a.status === 'active').length || 0;
+          
+      } catch (error) {
+        console.error('Failed to load activations:', error);
+        // Show demo data
+        showDemoActivations();
+      }
+    }
+    
+    function loadAccountInfo() {
+      const email = getUserEmail();
+      const name = getUserName();
+      
+      document.getElementById('accountEmail').value = email;
+      document.getElementById('accountName').value = name;
+      
+      // Set member since date (just use today for demo)
+      document.getElementById('memberSince').textContent = formatDate(new Date());
+    }
+	
+	async function loadMyOrders() {
+  try {
+    const userEmail = getUserEmail();
+    const response = await apiCall(`/api/user/orders?email=${userEmail}`);
+    
+    // Update the orders count stat
+    document.getElementById('ordersCount').textContent = response.orders?.length || 0;
+    
+    // Update total purchases in account tab
+    document.getElementById('totalPurchases').textContent = response.orders?.filter(o => o.payment_status === 'completed').length || 0;
+    
+  } catch (error) {
+    console.error('Failed to load orders:', error);
+    document.getElementById('ordersCount').textContent = '0';
+    document.getElementById('totalPurchases').textContent = '0';
+  }
+}
+    
+    // ========== DEMO DATA FUNCTIONS ==========
+    function showDemoLicenses() {
+      const tbody = document.getElementById('licensesTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center;" class="muted">
+            No licenses found. Visit the Store to purchase your first license!
+          </td>
+        </tr>
+      `;
+      document.getElementById('myLicensesCount').textContent = '0';
+    }
+    
+    function showDemoActivations() {
+      const tbody = document.getElementById('activationsTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center;" class="muted">
+            No active accounts. Your activations will appear here once you activate an EA.
+          </td>
+        </tr>
+      `;
+      document.getElementById('activeAccountsCount').textContent = '0';
+    }
+    
+    function showDemoProducts() {
+      const container = document.getElementById('storeProducts');
+      container.innerHTML = `
+        <div class="card">
+          <h2>Starter License</h2>
+          <div style="font-size: 24px; color: var(--primary-gold); margin-bottom: 16px;">₵299</div>
+          <p class="muted" style="margin-bottom: 16px;">Perfect for individual traders</p>
+          <div style="margin-bottom: 16px;">
+            <div class="muted" style="margin-bottom: 8px;">✅ 2 Live Accounts</div>
+            <div class="muted" style="margin-bottom: 8px;">✅ 1 Demo Account</div>
+            <div class="muted">✅ 30 Days License</div>
+          </div>
+          <button onclick='purchaseProduct(${JSON.stringify({id: 1, product_name: "Starter License", price: 299, max_live_accounts: 2, max_demo_accounts: 1, license_type: "subscription", license_duration_days: 30})})'>Purchase Now</button>
+        </div>
+        
+        <div class="card">
+          <h2>Professional License</h2>
+          <div style="font-size: 24px; color: var(--primary-gold); margin-bottom: 16px;">₵599</div>
+          <p class="muted" style="margin-bottom: 16px;">For serious traders</p>
+          <div style="margin-bottom: 16px;">
+            <div class="muted" style="margin-bottom: 8px;">✅ 5 Live Accounts</div>
+            <div class="muted" style="margin-bottom: 8px;">✅ 2 Demo Accounts</div>
+            <div class="muted">✅ 90 Days License</div>
+          </div>
+          <button onclick='purchaseProduct(${JSON.stringify({id: 2, product_name: "Professional License", price: 599, max_live_accounts: 5, max_demo_accounts: 2, license_type: "subscription", license_duration_days: 90})})'>Purchase Now</button>
+        </div>
+        
+        <div class="card">
+          <h2>Enterprise License</h2>
+          <div style="font-size: 24px; color: var(--primary-gold); margin-bottom: 16px;">₵1,499</div>
+          <p class="muted" style="margin-bottom: 16px;">Ultimate trading solution</p>
+          <div style="margin-bottom: 16px;">
+            <div class="muted" style="margin-bottom: 8px;">✅ 10 Live Accounts</div>
+            <div class="muted" style="margin-bottom: 8px;">✅ 5 Demo Accounts</div>
+            <div class="muted">✅ Lifetime License</div>
+          </div>
+          <button onclick='purchaseProduct(${JSON.stringify({id: 3, product_name: "Enterprise License", price: 1499, max_live_accounts: 10, max_demo_accounts: 5, license_type: "lifetime"})})'>Purchase Now</button>
+        </div>
+      `;
+    }
+    
+    // ========== ACTION FUNCTIONS ==========
+    function signOut() {
+      if (confirm('Are you sure you want to sign out?')) {
+        localStorage.clear();
+        window.location.href = '/login.html';
+      }
+    }
+    
+    function viewLicenseDetails(licenseKey) {
+      showAlert(`License details for: ${licenseKey}`, 'info');
+    }
+    
+    function updateAccount() {
+      showAlert('Profile updated successfully!', 'success');
+    }
+    
+    function changePassword() {
+      const current = document.getElementById('currentPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      
+      if (!current || !newPass || !confirm) {
+        showAlert('Please fill all password fields', 'error');
+        return;
+      }
+      
+      if (newPass !== confirm) {
+        showAlert('New passwords do not match', 'error');
+        return;
+      }
+      
+      showAlert('Password changed successfully!', 'success');
+    }
+    
+    function sendSupport() {
+      const subject = document.getElementById('supportSubject').value;
+      const message = document.getElementById('supportMessage').value;
+      
+      if (!message) {
+        showAlert('Please enter a message', 'error');
+        return;
+      }
+      
+      showAlert('Support message sent! We\'ll respond within 24 hours.', 'success');
+      document.getElementById('supportMessage').value = '';
+    }
+    
+    // ========== UTILITY FUNCTIONS ==========
+    function formatDate(dateString) {
+      if (!dateString) return '—';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+    
+    // ========== INITIALIZATION ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if user is logged in
+      const token = getUserToken();
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+      
+      // Set user info
+      const userName = getUserName();
+      const userEmail = getUserEmail();
+      
+      document.getElementById('userName').textContent = userName;
+      document.getElementById('userEmail').textContent = userEmail;
+      document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+      
+      // Load initial data
+      loadMyLicenses();
+	  loadMyOrders();
+      
+      // Set initial stats
+      document.getElementById('expiringCount').textContent = '0';
+      document.getElementById('ordersCount').textContent = '0';
+    });
+    
+    // Make functions globally available
+    window.copyToClipboard = copyToClipboard;
+    window.signOut = signOut;
+    window.viewLicenseDetails = viewLicenseDetails;
+    window.purchaseProduct = purchaseProduct;
+    window.updateAccount = updateAccount;
+    window.changePassword = changePassword;
+    window.sendSupport = sendSupport;
+    window.switchToTab = switchToTab;
+  </script>
+</body>
+</html>

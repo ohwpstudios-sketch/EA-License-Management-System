@@ -1,0 +1,18 @@
+name = "ea-license-system"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# (optional but recommended to pin)
+# account_id = "ea2eb3a9813660dfca2a60e594858538"
+
+[[d1_databases]]
+binding = "ea_license_db_new"
+database_name = "ea-license-db-new"
+database_id = "7f5b4848-aa34-4640-b039-4ea0d28663fc"
+
+[vars]
+LOG_RETENTION_DAYS = "90"
+PLACEHOLDER = "placeholder"
+
+[triggers]
+crons = ["0 2 * * *"]

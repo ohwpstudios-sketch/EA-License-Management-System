@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - EA License System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #FABA13;
+      --primary-dark: #E5A40C;
+      --bg-dark: #0A0E1A;
+      --bg-secondary: #151B2E;
+      --card-bg: #1C2438;
+      --text-primary: #FFFFFF;
+      --text-secondary: #B8BCC8;
+      --border: rgba(248, 186, 19, 0.1);
+      --success: #22C55E;
+      --error: #EF4444;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-secondary) 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 480px;
+      width: 100%;
+    }
+    
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--bg-dark);
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      opacity: 0.9;
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .alert.show {
+      display: block;
+    }
+    
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+    
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+    
+    .links {
+      margin-top: 20px;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    
+    .links a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Create Account</h1>
+    
+    <div id="alertBox" class="alert"></div>
+    
+    <form id="registrationForm">
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="email" required />
+      </div>
+      
+      <div class="form-group">
+        <label>Password *</label>
+        <input type="password" id="password" required />
+      </div>
+      
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="fullName" required />
+      </div>
+      
+      <div class="form-group">
+        <label>Company (Optional)</label>
+        <input type="text" id="company" />
+      </div>
+      
+      <div class="form-group">
+        <label>Why do you need an account? (Optional)</label>
+        <textarea id="reason" rows="3"></textarea>
+      </div>
+      
+      <button type="submit" id="submitBtn">Create Account</button>
+    </form>
+    
+    <div class="links">
+      <a href="/store">Browse Store as Guest →</a>
+    </div>
+  </div>
+  
+  <script>
+    const API_URL = 'https://ea-license-system.ghwmelite.workers.dev';
+    
+    function showAlert(message, type) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.className = `alert alert-${type} show`;
+      alertBox.textContent = message;
+    }
+    
+    document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      
+      try {
+        const response = await fetch(`${API_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            full_name: document.getElementById('fullName').value,
+            company: document.getElementById('company').value,
+            reason: document.getElementById('reason').value
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showAlert('Registration successful! Wait for admin approval.', 'success');
+          e.target.reset();
+        } else {
+          showAlert(result.error, 'error');
+        }
+      } catch (err) {
+        showAlert('Error occurred', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

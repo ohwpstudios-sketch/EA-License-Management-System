@@ -1,0 +1,28 @@
+name = "ea-license-system"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "ea_license_db_new"
+database_name = "ea-license-db-new"
+database_id = "7f5b4848-aa34-4640-b039-4ea0d28663fc"
+
+[vars]
+PLACEHOLDER = "placeholder"
+TELEGRAM_CHAT_ID = "-1002902266828"
+ALERT_DIGEST_LOOKBACK_HOURS = "24"   # optional; defaults to 24
+
+# Optional but handy to keep for your UI
+PAYSTACK_PUBLIC_KEY = "pk_live_8a7d675968e5b2a940a5a114a07a14920beb7a84"
+
+# Where Paystack should redirect after payment (optional)
+BILLING_CALLBACK_URL = "https://dashboard.ghwmelite.work/billing/success"
+
+# A default tenant id (today we run single-tenant as 'default')
+DEFAULT_TENANT_ID = "tenant_default"
+
+# Start with "0" so billing is not enforced while you test
+ENFORCE_BILLING = "1"
+
+[triggers]
+crons = ["0 2 * * *"]  # 02:00 UTC daily

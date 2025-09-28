@@ -1,0 +1,121 @@
+/* Fluid dark theme with seamless flow between page bg and cards */
+:root{
+  --bg-0: #0b1020;       /* page background start */
+  --bg-1: #101833;       /* page background end */
+  --surface-0: #11182d;  /* card base */
+  --surface-1: #121c38;  /* card elevated */
+  --text: #e6ebff;
+  --muted: #9fb0ffcc;
+  --accent: #7aa2ff;
+  --accent-2: #4fd1c5;
+  --danger: #ff7b7b;
+  --live: #7aa2ff;
+  --demo: #4fd1c5;
+  --ring: #30407a;
+  --shadow: 0 8px 24px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.04);
+}
+
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  color:var(--text);
+  background: radial-gradient(1200px 600px at 10% -10%, var(--bg-1), transparent 40%),
+              radial-gradient(1400px 700px at 100% 0, var(--bg-1), transparent 35%),
+              linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  font: 15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.shell{ max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+header.shell{ display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.brand{ display:flex; align-items:center; gap:12px; }
+.logo{ width:36px; height:36px; display:grid; place-items:center; border-radius:12px; background:linear-gradient(135deg,var(--surface-1),var(--surface-0)); box-shadow:var(--shadow); }
+.title h1{ margin:0; font-size:18px; }
+.title p{ margin:0; color:var(--muted); font-size:12px; }
+
+.card{
+  background: linear-gradient(180deg, color-mix(in oklab, var(--surface-0) 85%, var(--bg-1)), var(--surface-1));
+  border: 1px solid color-mix(in oklab, var(--ring), transparent 70%);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: var(--shadow);
+}
+.cardHeader{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+.grid{ display:grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap:12px; }
+.row{ display:flex; flex-direction:column; gap:6px; }
+.span2{ grid-column: span 2; }
+
+input, textarea, button{
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--ring), transparent 50%);
+  background: linear-gradient(180deg, var(--surface-0), var(--surface-1));
+  color: var(--text);
+  padding: 10px 12px;
+  outline: none;
+  box-shadow: var(--shadow);
+}
+input:focus, textarea:focus{ border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent); }
+
+button{ cursor:pointer; font-weight:600; }
+button.ghost{ background: transparent; }
+button.small{ padding: 6px 10px; font-size: 12px; }
+
+.search{ min-width: 260px; }
+
+.code{
+  background: #0c1226;
+  border: 1px dashed color-mix(in oklab, var(--ring), transparent 40%);
+  padding: 12px;
+  border-radius: 10px;
+  overflow: auto;
+}
+
+.hidden{ display:none; }
+
+.cards{ display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.licenseCard{
+  background: linear-gradient(180deg, color-mix(in oklab, var(--surface-1) 92%, var(--bg-1)), var(--surface-0));
+  border: 1px solid color-mix(in oklab, var(--ring), transparent 50%);
+  border-radius: 16px;
+  padding: 14px;
+  transition: transform .12s ease;
+}
+.licenseCard:hover{ transform: translateY(-2px); }
+
+.licHeader{ display:flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.key{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight:700; }
+.meta{ color: var(--muted); font-size:12px; }
+
+.badge{
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid color-mix(in oklab, var(--ring), transparent 30%);
+  background: linear-gradient(180deg, var(--surface-0), var(--surface-1));
+}
+.badge.active{ color: #b6fbb6; }
+.badge.revoked{ color: var(--danger); }
+.badge.suspended{ color: #ffd18f; }
+.badge.danger{ color: var(--danger); }
+
+.bars{ margin-top: 10px; display:flex; flex-direction:column; gap: 8px; }
+.bar{ display:grid; grid-template-columns: 42px 1fr 58px; gap:8px; align-items:center; }
+.track{
+  height:10px;
+  border-radius:999px;
+  background: color-mix(in oklab, var(--surface-1), var(--bg-1) 35%);
+  border: 1px solid color-mix(in oklab, var(--ring), transparent 45%);
+  overflow:hidden;
+}
+.fill{ height:100%; border-radius:999px; background: var(--accent); }
+.fill.live{ background: var(--live); }
+.fill.demo{ background: var(--demo); }
+.val{ text-align:right; color: var(--muted); }
+
+.footer{ margin-top: 10px; display:flex; align-items:center; justify-content: space-between; color: var(--muted); }
+
+.muted{ color: var(--muted); }
+.hint{ color: var(--muted); font-size: 12px; margin-top: 8px; }

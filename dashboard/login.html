@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - EA License System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #FABA13;
+      --primary-dark: #E5A40C;
+      --bg-dark: #0A0E1A;
+      --bg-secondary: #151B2E;
+      --card-bg: #1C2438;
+      --text-primary: #FFFFFF;
+      --text-secondary: #B8BCC8;
+      --border: rgba(248, 186, 19, 0.1);
+      --success: #22C55E;
+      --error: #EF4444;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-secondary) 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 480px;
+    }
+    
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    
+    .subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 32px;
+      font-size: 24px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(250, 186, 19, 0.1);
+    }
+    
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--bg-dark);
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(250, 186, 19, 0.3);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .secondary-btn {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      margin-top: 12px;
+    }
+    
+    .secondary-btn:hover {
+      background: rgba(250, 186, 19, 0.1);
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .alert.show {
+      display: block;
+    }
+    
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+    
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+    
+    .login-type-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .login-type {
+      flex: 1;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .login-type.active {
+      background: rgba(250, 186, 19, 0.1);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .links {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    .links a {
+      color: var(--primary);
+      text-decoration: none;
+      display: inline-block;
+      margin: 4px 0;
+    }
+    
+    .links a:hover {
+      text-decoration: underline;
+    }
+    
+    .divider {
+      margin: 20px 0;
+      text-align: center;
+      color: var(--text-secondary);
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border);
+    }
+    
+    .divider span {
+      background: var(--card-bg);
+      padding: 0 16px;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">EA License System</div>
+    <div class="subtitle">Professional License Management</div>
+    
+    <div class="card">
+      <h1>Sign In</h1>
+      
+      <div id="alertBox" class="alert"></div>
+      
+      <div class="login-type-selector">
+        <div class="login-type active" id="userLoginType">
+          👤 User Login
+        </div>
+        <div class="login-type" id="adminLoginType">
+          🔐 Admin Login
+        </div>
+      </div>
+      
+      <!-- User Login Form -->
+      <form id="userLoginForm">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="userEmail" required placeholder="user@example.com" />
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="userPassword" required placeholder="Enter your password" />
+        </div>
+        
+        <button type="submit" id="userLoginBtn">Sign In</button>
+      </form>
+      
+      <!-- Admin Login Form -->
+      <form id="adminLoginForm" style="display: none;">
+        <div class="form-group">
+          <label>Admin API Key</label>
+          <input type="password" id="adminApiKey" placeholder="Enter your admin API key" />
+        </div>
+        
+        <button type="submit" id="adminLoginBtn">Sign In as Admin</button>
+      </form>
+      
+      <div class="divider">
+        <span>or</span>
+      </div>
+      
+      <button class="secondary-btn" onclick="window.location.href='/register.html'">
+        📝 Create New Account
+      </button>
+      
+      <button class="secondary-btn" onclick="window.location.href='/store'">
+        🛒 Browse Store as Guest
+      </button>
+      
+      <div class="links">
+        <a href="/">← Back to Dashboard</a><br>
+        <a href="/forgot-password">Forgot Password?</a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const API_URL = 'https://ea-license-system.ghwmelite.workers.dev';
+    
+    // Login type switcher
+    const userType = document.getElementById('userLoginType');
+    const adminType = document.getElementById('adminLoginType');
+    const userForm = document.getElementById('userLoginForm');
+    const adminForm = document.getElementById('adminLoginForm');
+    
+    userType.addEventListener('click', () => {
+      userType.classList.add('active');
+      adminType.classList.remove('active');
+      userForm.style.display = 'block';
+      adminForm.style.display = 'none';
+    });
+    
+    adminType.addEventListener('click', () => {
+      adminType.classList.add('active');
+      userType.classList.remove('active');
+      adminForm.style.display = 'block';
+      userForm.style.display = 'none';
+    });
+    
+    function showAlert(message, type) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.className = `alert alert-${type} show`;
+      alertBox.textContent = message;
+      setTimeout(() => {
+        alertBox.classList.remove('show');
+      }, 5000);
+    }
+    
+    // User login handler
+    document.getElementById('userLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('userLoginBtn');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      
+      try {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: document.getElementById('userEmail').value,
+            password: document.getElementById('userPassword').value
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Store user session
+          localStorage.setItem('user_token', result.token);
+          localStorage.setItem('user_email', result.email);
+          localStorage.setItem('user_role', result.role || 'user');
+          
+          showAlert('Login successful! Redirecting...', 'success');
+          
+          setTimeout(() => {
+            if (result.role === 'admin') {
+              window.location.href = '/index.html';
+            } else {
+              window.location.href = '/user-dashboard.html';
+            }
+          }, 1500);
+        } else {
+          showAlert(result.error || 'Login failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Connection error. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    });
+    
+    // Admin login handler
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const apiKey = document.getElementById('adminApiKey').value;
+      
+      if (!apiKey) {
+        showAlert('Please enter your API key', 'error');
+        return;
+      }
+      
+      // Store admin token
+      localStorage.setItem('ea_admin_token', apiKey);
+      showAlert('Admin authenticated! Redirecting...', 'success');
+      
+      setTimeout(() => {
+        window.location.href = '/index.html';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
